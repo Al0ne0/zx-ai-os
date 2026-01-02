@@ -8,60 +8,23 @@ on:
 jobs:
   build-apk:
     runs-on: ubuntu-latest
-    env:
-      JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
 
     steps:
-    - name: Checkout
+    - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Set up JDK 11
+    - name: Set up Java
       uses: actions/setup-java@v4
       with:
-        distribution: 'temurin'
-        java-version: '11'
+        distribution: temurin
+        java-version: '17'
 
-    - name: Set up Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: 'stable'
+    - - name: Set up Flutter
+  uses: subosito/flutter-action@v2
+  with:
+    flutter-version: '3.22.0'
+    architecture: x64
 
-    - name: Install Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-
-    - name: Build web SPA
-      working-directory: ${{ github.workspace }}
-      run: |
-        npm ci
-        npm run build
-
-    - name: Prepare Flutter project
-      working-directory: android-wrapper/flutter
-      run: |
-        # Create flutter project if necessary
-        if [ ! -f pubspec.yaml ]; then
-          echo "No pubspec found. Exiting." && exit 1
-        fi
-        if [ ! -d android ]; then
-          flutter create .
-        fi
-        # Copy our template AndroidManifest/MainActivity if provided
-        if [ -f android_template/AndroidManifest.xml ]; then
-          mkdir -p android/app/src/main
-          cp android_template/AndroidManifest.xml android/app/src/main/AndroidManifest.xml
-        fi
-        if [ -f android_template/MainActivity.kt ]; then
-          mkdir -p android/app/src/main/kotlin/com/example/zxaios
-          cp android_template/MainActivity.kt android/app/src/main/kotlin/com/example/zxaios/MainActivity.kt
-        fi
-
-    - name: Copy web assets into Flutter
-      run: |
-        rm -rf android-wrapper/flutter/assets/www || true
-        mkdir -p android-wrapper/flutter/assets/www
-        cp -r dist/* android-wrapper/flutter/assets/www/
 
     - name: Flutter pub get
       working-directory: android-wrapper/flutter
@@ -69,7 +32,7 @@ jobs:
 
     - name: Build APK
       working-directory: android-wrapper/flutter
-      run: flutter build apk --release --no-shrink
+      run: flutter build apk --release
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
