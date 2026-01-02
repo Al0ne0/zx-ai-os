@@ -1,0 +1,20 @@
+name: zx_ai_os_wrapper
+description: Flutter wrapper for ZX AI OS web SPA
+publish_to: 'none'
+version: 0.0.1
+environment:
+  sdk: '>=2.18.0 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  webview_flutter: ^4.0.7
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/www/
